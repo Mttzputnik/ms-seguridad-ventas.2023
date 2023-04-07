@@ -23,10 +23,9 @@ export class Login extends Entity {
   estadoCodigo2Fa: boolean;
 
   @property({
-    type: 'string',
-    required: true,
+    type: 'string'
   })
-  token: string;
+  token?: string;
 
   @property({
     type: 'boolean',

@@ -200,6 +200,7 @@ export class UsuarioController {
     let usuario = await this.servicioSeguridad.identificarUsuario(credenciales)
     if (usuario) {
       let codigo2fa = this.servicioSeguridad.creartextoAleatorio(5)
+      console.log(codigo2fa)
       let login: Login = new Login()
       login.usuarioId = usuario._id!
       login.codigo2Fa = codigo2fa
@@ -207,6 +208,7 @@ export class UsuarioController {
       login.token = ""
       login.estadoToken = false
       this.repositorioLogin.create(login)
+      usuario.clave = ""
       //notificar al usuario via correo o sms
       return usuario
     }
@@ -237,6 +239,19 @@ export class UsuarioController {
 
       if (usuario) {
         usuario.clave = ""
+        try {
+          this.usuarioRepository.logins(usuario._id).patch({
+            estadoCodigo2Fa: true,
+            token : token
+
+          },
+            {
+              estadoCodigo2Fa: false
+            })
+        } catch {
+          console.log("No se ha almacenado el cambio del estado de token en la base de datos. ")
+        }
+
         return {
           user: usuario,
           token: token
